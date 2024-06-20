@@ -36,6 +36,7 @@ application:
       token:
         expiration-in-minutes: 15
         characters-token: 0123456789
+        token-length: 6
 
     mailing:
       frontend:
