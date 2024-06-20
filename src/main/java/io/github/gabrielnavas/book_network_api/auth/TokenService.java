@@ -9,14 +9,13 @@ import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TokenService {
 
     private final TokenRepository tokenRepository;
-
+    
     @Value("${application.security.register.token.characters-token}")
     private String charactersTokenCharacters;
     @Value("${application.security.register.token.expiration-in-minutes}")
@@ -25,8 +24,7 @@ public class TokenService {
     private long tokenLength;
 
     public Token generateTokenAndSave(User user) {
-        String generateToken = verifyRepeatedTokenAndGenerate();
-
+        String generateToken = generateActivationToken();
         Token token = Token.builder()
                 .token(generateToken)
                 .createdAt(LocalDateTime.now())
@@ -35,29 +33,6 @@ public class TokenService {
                 .build();
         return tokenRepository.save(token);
     }
-
-    private String verifyRepeatedTokenAndGenerate() {
-        String generateToken;
-
-        int times = 0;
-        int attempts = 10;
-        do {
-            generateToken = generateActivationToken();
-            times++;
-
-            Optional<Token> optionalToken = tokenRepository.findByToken(generateToken);
-            if (optionalToken.isEmpty()) {
-                break;
-            }
-
-        } while (times < attempts);
-
-        if (times == attempts) {
-            throw new RuntimeException("Token numbers has expired");
-        }
-        return generateToken;
-    }
-
 
     private String generateActivationToken() {
         StringBuilder codeBuilder = new StringBuilder();

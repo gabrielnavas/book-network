@@ -31,8 +31,7 @@ public class BeansConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationObservationContext(AuthenticationConfiguration configuration)
-            throws Exception {
-        return configuration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }

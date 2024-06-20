@@ -17,13 +17,8 @@ public class Token {
     @Id
     @GeneratedValue
     private Long id;
-
-    @Column(nullable = false)
     private String token;
-
-    @Column(nullable = false)
     private LocalDateTime createdAt;
-
     private LocalDateTime expiresAt;
     private LocalDateTime validatedAt;
 

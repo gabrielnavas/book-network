@@ -61,6 +61,7 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
+
     private String buildToken(HashMap<String, Object> extractClaims, UserDetails userDetails, long jwtExpirationInMs) {
         var authorities = userDetails.getAuthorities()
                 .stream()
