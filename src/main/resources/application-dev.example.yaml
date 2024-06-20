@@ -16,7 +16,7 @@ spring:
 
   mail:
     host: ""
-    port: 587
+    port: 0
     username: ""
     password: ""
     properties:
