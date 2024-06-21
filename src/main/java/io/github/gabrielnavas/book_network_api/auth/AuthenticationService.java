@@ -69,7 +69,6 @@ public class AuthenticationService {
 
     private void sendValidationEmail(User user) throws MessagingException, IOException {
         Token token = tokenService.generateTokenAndSave(user);
-        // send email
         emailService.sendEmail(
                 user.getEmail(),
                 user.fullName(),
