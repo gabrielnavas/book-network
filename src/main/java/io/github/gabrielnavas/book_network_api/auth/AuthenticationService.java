@@ -6,6 +6,7 @@ import io.github.gabrielnavas.book_network_api.role.Role;
 import io.github.gabrielnavas.book_network_api.role.RoleRepository;
 import io.github.gabrielnavas.book_network_api.security.JwtService;
 import io.github.gabrielnavas.book_network_api.user.Token;
+import io.github.gabrielnavas.book_network_api.user.TokenRepository;
 import io.github.gabrielnavas.book_network_api.user.User;
 import io.github.gabrielnavas.book_network_api.user.UserRepository;
 import jakarta.mail.MessagingException;
@@ -16,8 +17,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,6 +35,7 @@ public class AuthenticationService {
     private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final TokenRepository tokenRepository;
     @Value("${application.security.mailing.frontend.activation-url}")
     private String activationEmail;
 
@@ -77,5 +81,37 @@ public class AuthenticationService {
                 token.getToken(),
                 "AccountActivation"
         );
+    }
+
+    @Transactional
+    public void activateAccount(String token) throws MessagingException, IOException {
+        Token savedToken = fetchToken(token);
+
+        savedToken.setValidatedAt(LocalDateTime.now());
+        tokenRepository.save(savedToken);
+
+        User user = userRepository.findByEmail(savedToken.getUser().getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
+
+    private Token fetchToken(String token) throws MessagingException, IOException {
+        Token savedToken = tokenRepository.findByToken(token)
+                // TODO: exception has to be defined
+                .orElseThrow(() -> new RuntimeException("Invalid"));
+
+        LocalDateTime now = LocalDateTime.now();
+        boolean tokenExpired = now.isAfter(savedToken.getExpiresAt());
+        if (tokenExpired) {
+            sendValidationEmail(savedToken.getUser());
+            throw new RuntimeException("Token is expired");
+        }
+
+        boolean tokenAlreadyValidate = savedToken.getValidatedAt() != null;
+        if (tokenAlreadyValidate) {
+            throw new RuntimeException("Token already validated");
+        }
+        return savedToken;
     }
 }
