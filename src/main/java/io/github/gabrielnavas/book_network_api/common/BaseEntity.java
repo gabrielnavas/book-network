@@ -28,8 +28,8 @@ public class BaseEntity {
     private Integer id;
 
     @CreatedDate
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "last_modified_date")

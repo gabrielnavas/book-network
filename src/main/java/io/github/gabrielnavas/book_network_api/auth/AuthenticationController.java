@@ -1,5 +1,6 @@
 package io.github.gabrielnavas.book_network_api.auth;
 
+import io.github.gabrielnavas.book_network_api.book.BookService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final BookService bookService;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.ACCEPTED)

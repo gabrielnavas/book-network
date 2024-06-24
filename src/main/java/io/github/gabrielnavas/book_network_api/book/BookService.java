@@ -1,12 +1,19 @@
 package io.github.gabrielnavas.book_network_api.book;
 
+import io.github.gabrielnavas.book_network_api.common.PageResponse;
 import io.github.gabrielnavas.book_network_api.exception.OperationNotPermittedException;
 import io.github.gabrielnavas.book_network_api.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,5 +42,29 @@ public class BookService {
                 .orElseThrow(
                         () -> new EntityNotFoundException(String.format("No book found with id: %d", bookId))
                 );
+    }
+
+    public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser) {
+        User user = ((User) connectedUser.getPrincipal());
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("createdAt").descending()
+        );
+        Page<Book> books = bookRepository.findAllDisplayableBooks(pageable, user.getId());
+
+        List<BookResponse> bookResponses = books.stream()
+                .map(bookMapper::toBookResponse)
+                .toList();
+
+        return new PageResponse<>(
+                bookResponses,
+                books.getNumber(),
+                books.getSize(),
+                Integer.parseInt(String.format("%d", books.getTotalElements())),
+                books.getTotalPages(),
+                books.isFirst(),
+                books.isLast()
+        );
     }
 }
