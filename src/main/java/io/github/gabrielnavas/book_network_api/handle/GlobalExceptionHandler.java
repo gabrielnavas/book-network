@@ -1,5 +1,6 @@
 package io.github.gabrielnavas.book_network_api.handle;
 
+import io.github.gabrielnavas.book_network_api.exception.OperationNotPermittedException;
 import jakarta.mail.MessagingException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +52,18 @@ public class GlobalExceptionHandler {
                                 .businessErrorCode(BusinessErrorCodes.BAD_CREDENTIALS.getCode())
                                 .businessErrorDescription(BusinessErrorCodes.BAD_CREDENTIALS.getDescription())
                                 .error(BusinessErrorCodes.BAD_CREDENTIALS.getDescription())
+                                .build()
+                );
+    }
+
+
+    @ExceptionHandler(OperationNotPermittedException.class)
+    public ResponseEntity<ExceptionResponse> handleException(OperationNotPermittedException exp) {
+        return ResponseEntity
+                .status(BAD_REQUEST)
+                .body(
+                        ExceptionResponse.builder()
+                                .error(exp.getMessage())
                                 .build()
                 );
     }

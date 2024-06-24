@@ -2,6 +2,7 @@ package io.github.gabrielnavas.book_network_api.auth;
 
 import io.github.gabrielnavas.book_network_api.email.EmailService;
 import io.github.gabrielnavas.book_network_api.email.EmailTemplate;
+import io.github.gabrielnavas.book_network_api.exception.OperationNotPermittedException;
 import io.github.gabrielnavas.book_network_api.role.Role;
 import io.github.gabrielnavas.book_network_api.role.RoleRepository;
 import io.github.gabrielnavas.book_network_api.security.JwtService;
@@ -57,6 +58,10 @@ public class AuthenticationService {
                 // TODO: better exception handling
                 .orElseThrow(() -> new IllegalArgumentException("ROLE USER was not initialized"));
 
+        userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+            throw new OperationNotPermittedException("user already exists with email: " + request.getEmail());
+        });
+
         User user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
@@ -91,7 +96,7 @@ public class AuthenticationService {
         tokenRepository.save(savedToken);
 
         User user = userRepository.findByEmail(savedToken.getUser().getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new OperationNotPermittedException("user not found"));
         user.setEnabled(true);
         userRepository.save(user);
     }

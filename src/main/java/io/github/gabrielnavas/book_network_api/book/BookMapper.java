@@ -1,2 +1,17 @@
-package io.github.gabrielnavas.book_network_api.book;public class BookMapper {
+package io.github.gabrielnavas.book_network_api.book;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class BookMapper {
+    public Book toBook(BookRequest request) {
+        return Book.builder()
+                .id(request.id())
+                .title(request.title())
+                .authorName(request.authorName())
+                .synopsis(request.synopsis())
+                .archived(false)
+                .shareable(request.shareable())
+                .build();
+    }
 }
