@@ -29,7 +29,7 @@ import java.util.List;
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
 public class User extends BaseEntity implements UserDetails, Principal {
-
+    
     private String firstname;
     private String lastname;
     private LocalDate dateOfBirth;
@@ -38,15 +38,13 @@ public class User extends BaseEntity implements UserDetails, Principal {
     private String password;
     private boolean accountLocked;
     private boolean enabled;
-
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
-
     @OneToMany(mappedBy = "owner")
     private List<Book> books;
-
     @OneToMany(mappedBy = "user")
     private List<BookTransactionHistory> histories;
+
 
     @Override
     public String getName() {

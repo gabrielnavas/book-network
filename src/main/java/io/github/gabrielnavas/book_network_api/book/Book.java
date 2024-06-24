@@ -22,34 +22,20 @@ import java.util.List;
 @Entity
 public class Book extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(unique = true)
     private String title;
-
-    @Column(nullable = false)
     private String authorName;
-
-    @Column(nullable = false)
     private String isbn;
-
-    @Column(nullable = false)
     private String synopsis;
-
-    @Column(nullable = false)
     private String bookCover;
-
-    @Column(nullable = false)
     private boolean archived;
-
-    @Column(nullable = false)
     private boolean shareable;
-
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
-
     @OneToMany(mappedBy = "book")
     private List<Feedback> feedbacks;
-
     @OneToMany(mappedBy = "book")
     private List<BookTransactionHistory> histories;
+
 }

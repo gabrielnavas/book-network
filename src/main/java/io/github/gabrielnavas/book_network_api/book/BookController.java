@@ -19,10 +19,11 @@ public class BookController {
     private final BookService bookService;
 
     @PostMapping
-    public ResponseEntity<?> saveBook(
+    public ResponseEntity<Integer> saveBook(
             @Valid @RequestBody BookRequest request,
             Authentication connectedUser
     ) {
-        return ResponseEntity.ok(bookService.saveBook(request, connectedUser));
+        Integer bookId = bookService.saveBook(request, connectedUser);
+        return ResponseEntity.ok(bookId);
     }
 }
