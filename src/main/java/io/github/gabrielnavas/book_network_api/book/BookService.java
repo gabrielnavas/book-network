@@ -2,6 +2,7 @@ package io.github.gabrielnavas.book_network_api.book;
 
 import io.github.gabrielnavas.book_network_api.exception.OperationNotPermittedException;
 import io.github.gabrielnavas.book_network_api.user.User;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,13 @@ public class BookService {
         book.setOwner(user);
         book = bookRepository.save(book);
         return book.getId();
+    }
+
+    public BookResponse findById(Integer bookId) {
+        return bookRepository.findById(bookId)
+                .map(bookMapper::toBookResponse)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(String.format("No book found with id: %d", bookId))
+                );
     }
 }

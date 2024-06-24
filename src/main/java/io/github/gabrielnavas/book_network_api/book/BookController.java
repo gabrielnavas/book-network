@@ -5,10 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/books")
@@ -25,5 +22,12 @@ public class BookController {
     ) {
         Integer bookId = bookService.saveBook(request, connectedUser);
         return ResponseEntity.ok(bookId);
+    }
+
+    @GetMapping("{book-id}")
+    public ResponseEntity<BookResponse> getBook(
+            @PathVariable("book-id") Integer bookId
+    ) {
+        return ResponseEntity.ok(bookService.findById(bookId));
     }
 }
