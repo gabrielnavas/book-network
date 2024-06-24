@@ -57,7 +57,7 @@ public class AuthenticationService {
                 // TODO: better exception handling
                 .orElseThrow(() -> new IllegalArgumentException("ROLE USER was not initialized"));
 
-        var user = User.builder()
+        User user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .email(request.getEmail())
@@ -67,7 +67,7 @@ public class AuthenticationService {
                 .roles(List.of(userRole))
                 .build();
 
-        userRepository.save(user);
+        user = userRepository.save(user);
         sendValidationEmail(user);
     }
 
