@@ -60,12 +60,9 @@ public class FeedbackService {
         User user = ((User) connectedUser.getPrincipal());
 
         Page<Feedback> pages = feedbackRepository.findAllByBookId(bookId, pageable);
-        List<FeedbackResponse> feedbackResponses = pages.map(feedback -> FeedbackResponse.builder()
-                        .note(feedback.getNote())
-                        .comment(feedback.getComment())
-                        .ownFeedback(Objects.equals(feedback.getCreatedBy(), user.getId()))
-                        .build())
-                .toList();
+        List<FeedbackResponse> feedbackResponses = pages.map(
+                feedback -> feedbackMapper.toFeedbackResponse(feedback, user.getId())
+        ).toList();
 
         return new PageResponse<>(
                 feedbackResponses,
