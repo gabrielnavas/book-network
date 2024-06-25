@@ -262,9 +262,41 @@ public class BookService {
 
         BookTransactionHistory history = bookTransactionHistoryRepository.findByBookIdAndUserId(bookId, user.getId())
                 .orElseThrow(
-                        () -> new OperationNotPermittedException(String.format("You did not borrow this book with the ID: %d", bookId))
+                        () -> new OperationNotPermittedException("You did not borrow this book")
                 );
         history.setReturned(true);
+        bookTransactionHistoryRepository.save(history);
+
+        return history.getId();
+    }
+
+    public Integer approveReturnBorrowedBook(Integer bookId, Authentication connectedUser) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(String.format("No book found with the ID: %d", bookId))
+                );
+        boolean bookIsArchived = book.isArchived();
+        if (bookIsArchived) {
+            throw new OperationNotPermittedException("The request book cannot be borrowed because it is archived");
+        }
+        boolean bookIsNotShareable = !book.isShareable();
+        if (bookIsNotShareable) {
+            throw new OperationNotPermittedException("The request book cannot be borrowed because it is not shareable");
+        }
+
+        User user = ((User) connectedUser.getPrincipal());
+        boolean isNotBookOwnerCorrect = !Objects.equals(book.getOwner().getId(), user.getId());
+        if (isNotBookOwnerCorrect) {
+            throw new OperationNotPermittedException("The request book cannot be borrowed or return your own book");
+        }
+
+        BookTransactionHistory history = bookTransactionHistoryRepository.findByBookIdAndOwnerId(bookId, user.getId())
+                .orElseThrow(
+                        () -> new OperationNotPermittedException(
+                                "The book has not been returned yet, or the transaction was not found. You cannot approve the return of the book"
+                        )
+                );
+        history.setReturnedApproved(true);
         bookTransactionHistoryRepository.save(history);
 
         return history.getId();
