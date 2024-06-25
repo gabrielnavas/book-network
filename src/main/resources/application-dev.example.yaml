@@ -42,6 +42,9 @@ application:
       frontend:
         activation-url:
           http://localhost:4200/activation-account
-
+  file:
+    upload:
+      photos-output-path: ./uploads
+      
 server:
   port: 8088

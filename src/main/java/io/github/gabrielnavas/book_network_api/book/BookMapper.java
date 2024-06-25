@@ -1,5 +1,6 @@
 package io.github.gabrielnavas.book_network_api.book;
 
+import io.github.gabrielnavas.book_network_api.file.FileUtils;
 import io.github.gabrielnavas.book_network_api.history.BookTransactionHistory;
 import io.github.gabrielnavas.book_network_api.history.BorrowedBooksResponse;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class BookMapper {
                 .shareable(book.isShareable())
                 .owner(book.getOwner().fullName())
                 .rate(book.getRate())
-//                .cover() TODO: implements this later
+                .cover(FileUtils.readFileFromLocation(book.getBookCover()))
                 .build();
     }
 

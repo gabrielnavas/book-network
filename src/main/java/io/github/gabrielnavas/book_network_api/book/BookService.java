@@ -2,6 +2,7 @@ package io.github.gabrielnavas.book_network_api.book;
 
 import io.github.gabrielnavas.book_network_api.common.PageResponse;
 import io.github.gabrielnavas.book_network_api.exception.OperationNotPermittedException;
+import io.github.gabrielnavas.book_network_api.file.FileStorageService;
 import io.github.gabrielnavas.book_network_api.history.BookTransactionHistory;
 import io.github.gabrielnavas.book_network_api.history.BookTransactionHistoryRepository;
 import io.github.gabrielnavas.book_network_api.history.BorrowedBooksResponse;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,6 +29,8 @@ public class BookService {
     private final BookRepository bookRepository;
     private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
     private final BookMapper bookMapper;
+
+    private final FileStorageService fileStorageService;
 
     public Integer saveBook(BookRequest request, Authentication connectedUser) {
         bookRepository.findByTitle(request.title()).ifPresent(book -> {
@@ -300,5 +304,16 @@ public class BookService {
         bookTransactionHistoryRepository.save(history);
 
         return history.getId();
+    }
+
+    public void uploadBookCoverPicture(MultipartFile file, Authentication connectedUser, Integer bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(String.format("No book found with the ID: %d", bookId))
+                );
+        User user = ((User) connectedUser.getPrincipal());
+        var bookCover = fileStorageService.saveFile(file, user.getId());
+        book.setBookCover(bookCover);
+        bookRepository.save(book);
     }
 }

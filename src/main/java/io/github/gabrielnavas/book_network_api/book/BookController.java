@@ -2,12 +2,14 @@ package io.github.gabrielnavas.book_network_api.book;
 
 import io.github.gabrielnavas.book_network_api.common.PageResponse;
 import io.github.gabrielnavas.book_network_api.history.BorrowedBooksResponse;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/books")
@@ -112,5 +114,15 @@ public class BookController {
             Authentication connectedUser
     ) {
         return ResponseEntity.ok(bookService.approveReturnBorrowedBook(bookId, connectedUser));
+    }
+
+    @PostMapping(value = "/cover/{book-id}", consumes = "multipart/form-data")
+    public ResponseEntity<?> uploadBookCoverPicture(
+            @PathVariable("book-id") Integer bookId,
+            @Parameter @RequestPart("file") MultipartFile file,
+            Authentication connectedUser
+    ) {
+        bookService.uploadBookCoverPicture(file, connectedUser, bookId);
+        return ResponseEntity.accepted().build();
     }
 }
