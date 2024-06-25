@@ -2,13 +2,18 @@ package io.github.gabrielnavas.book_network_api.feedback;
 
 import io.github.gabrielnavas.book_network_api.book.Book;
 import io.github.gabrielnavas.book_network_api.book.BookRepository;
+import io.github.gabrielnavas.book_network_api.common.PageResponse;
 import io.github.gabrielnavas.book_network_api.exception.OperationNotPermittedException;
 import io.github.gabrielnavas.book_network_api.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -43,5 +48,33 @@ public class FeedbackService {
         feedback = feedbackRepository.save(feedback);
         return feedback.getId();
 
+    }
+
+    public PageResponse<FeedbackResponse> findAllFeedbacksByBook(
+            Integer bookId,
+            int page,
+            int size,
+            Authentication connectedUser
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        User user = ((User) connectedUser.getPrincipal());
+
+        Page<Feedback> pages = feedbackRepository.findAllByBookId(bookId, pageable);
+        List<FeedbackResponse> feedbackResponses = pages.map(feedback -> FeedbackResponse.builder()
+                        .note(feedback.getNote())
+                        .comment(feedback.getComment())
+                        .ownFeedback(Objects.equals(feedback.getCreatedBy(), user.getId()))
+                        .build())
+                .toList();
+
+        return new PageResponse<>(
+                feedbackResponses,
+                pages.getNumber(),
+                pages.getSize(),
+                Long.valueOf(pages.getTotalElements()).intValue(),
+                pages.getTotalPages(),
+                pages.isFirst(),
+                pages.isLast()
+        );
     }
 }
