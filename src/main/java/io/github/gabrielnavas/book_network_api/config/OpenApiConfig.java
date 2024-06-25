@@ -13,28 +13,30 @@ import io.swagger.v3.oas.annotations.servers.Server;
 @OpenAPIDefinition(
         info = @Info(
                 contact = @Contact(
-                        name = "navasoka",
+                        name = "Navas",
                         email = "gabrielnavas@protonmail.com",
                         url = "https://gabrielnavas.github.io"
                 ),
-                description = "OpenApi documentation for Spring Boot Security",
-                title = "OpenApi specification - navasoka",
+                description = "OpenApi documentation for Spring Security",
+                title = "OpenApi specification - Gabriel Navas",
                 version = "1.0",
                 license = @License(
-                        name = "license name",
+                        name = "Licence name",
                         url = "https://some-url.com"
                 ),
-                termsOfService = "Terms of Service"
+                termsOfService = "Terms of service"
         ),
         servers = {
                 @Server(
                         description = "Local ENV",
                         url = "http://localhost:8088/api/v1"
-                ),
+                )
         },
-        security = @SecurityRequirement(
-                name = "barerAuth"
-        )
+        security = {
+                @SecurityRequirement(
+                        name = "bearerAuth"
+                )
+        }
 )
 @SecurityScheme(
         name = "bearerAuth",

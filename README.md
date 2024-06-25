@@ -1,15 +1,23 @@
-## frontend
+## 1. backend
+
+- Init docker compose
 
 ```sh
+# init postgres
+docker-compose up
+# init spring boot
+./mvnw spring-boot:run
+```
+
+## 2. frontend
+
+```sh
+    # enter the ui project 
     cd book-network-ui
+    # install the packages
     npm i
+    # init server
     ng serve
 ```
 
-## backend
-
-- Open your intellij and click Run
-
 ## Doc Api
-
-[DOC SWAGGER LINK AFTER START BACKEND](http://localhost:8088/api/v1/swagger-ui/index.html)
