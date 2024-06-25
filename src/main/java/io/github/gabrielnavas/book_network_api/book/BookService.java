@@ -210,7 +210,7 @@ public class BookService {
 
         boolean isBookOwnerCorrect = Objects.equals(book.getOwner().getId(), user.getId());
         if (isBookOwnerCorrect) {
-            throw new OperationNotPermittedException("The request book cannot be borrowed because it is yours");
+            throw new OperationNotPermittedException("The request book cannot be borrowed your own book");
         }
 
         boolean alreadyBorrowed = bookTransactionHistoryRepository.isAlreadyBorrowedByUser(bookId, user.getId());
@@ -238,5 +238,35 @@ public class BookService {
 
         bookTransactionHistory = bookTransactionHistoryRepository.save(bookTransactionHistory);
         return bookTransactionHistory.getId();
+    }
+
+    public Integer returnBorrowedBook(Integer bookId, Authentication connectedUser) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(String.format("No book found with the ID: %d", bookId))
+                );
+        boolean bookIsArchived = book.isArchived();
+        if (bookIsArchived) {
+            throw new OperationNotPermittedException("The request book cannot be borrowed because it is archived");
+        }
+        boolean bookIsNotShareable = !book.isShareable();
+        if (bookIsNotShareable) {
+            throw new OperationNotPermittedException("The request book cannot be borrowed because it is not shareable");
+        }
+
+        User user = ((User) connectedUser.getPrincipal());
+        boolean isBookOwnerCorrect = Objects.equals(book.getOwner().getId(), user.getId());
+        if (isBookOwnerCorrect) {
+            throw new OperationNotPermittedException("The request book cannot be borrowed or return your own book");
+        }
+
+        BookTransactionHistory history = bookTransactionHistoryRepository.findByBookIdAndUserId(bookId, user.getId())
+                .orElseThrow(
+                        () -> new OperationNotPermittedException(String.format("You did not borrow this book with the ID: %d", bookId))
+                );
+        history.setReturned(true);
+        bookTransactionHistoryRepository.save(history);
+
+        return history.getId();
     }
 }
