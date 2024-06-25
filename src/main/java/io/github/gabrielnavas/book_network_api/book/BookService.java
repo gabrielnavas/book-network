@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -164,5 +165,22 @@ public class BookService {
                 allBorrowedBooks.isFirst(),
                 allBorrowedBooks.isLast()
         );
+    }
+
+    public Integer updateShareableStatus(Integer bookId, Authentication connectedUser) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(
+                        () -> new EntityNotFoundException(String.format("No book found with the ID: %d", bookId))
+                );
+        User user = ((User) connectedUser.getPrincipal());
+
+        boolean isBookOwnerCorrect = Objects.equals(book.getOwner().getId(), user.getId());
+        if (!isBookOwnerCorrect) {
+            throw new OperationNotPermittedException("You cannot update books shareable status");
+        }
+
+        book.setShareable(!book.isShareable());
+        bookRepository.save(book);
+        return book.getId();
     }
 }
