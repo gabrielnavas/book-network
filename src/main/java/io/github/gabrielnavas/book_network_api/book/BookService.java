@@ -2,6 +2,9 @@ package io.github.gabrielnavas.book_network_api.book;
 
 import io.github.gabrielnavas.book_network_api.common.PageResponse;
 import io.github.gabrielnavas.book_network_api.exception.OperationNotPermittedException;
+import io.github.gabrielnavas.book_network_api.history.BookTransactionHistory;
+import io.github.gabrielnavas.book_network_api.history.BookTransactionHistoryRepository;
+import io.github.gabrielnavas.book_network_api.history.BorrowedBooksResponse;
 import io.github.gabrielnavas.book_network_api.user.User;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import java.util.List;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
     private final BookMapper bookMapper;
 
     public Integer saveBook(BookRequest request, Authentication connectedUser) {
@@ -44,7 +48,11 @@ public class BookService {
                 );
     }
 
-    public PageResponse<BookResponse> findAllBooks(int page, int size, Authentication connectedUser) {
+    public PageResponse<BookResponse> findAllBooks(
+            int page,
+            int size,
+            Authentication connectedUser
+    ) {
         User user = ((User) connectedUser.getPrincipal());
         Pageable pageable = PageRequest.of(
                 page,
@@ -68,7 +76,11 @@ public class BookService {
         );
     }
 
-    public PageResponse<BookResponse> findAllBooksByOwner(int page, int size, Authentication connectedUser) {
+    public PageResponse<BookResponse> findAllBooksByOwner(
+            int page,
+            int size,
+            Authentication connectedUser
+    ) {
         User user = ((User) connectedUser.getPrincipal());
         Pageable pageable = PageRequest.of(
                 page,
@@ -91,6 +103,38 @@ public class BookService {
                 books.getTotalPages(),
                 books.isFirst(),
                 books.isLast()
+        );
+    }
+
+    public PageResponse<BorrowedBooksResponse> findAllBorrowedBooks(
+            int page,
+            int size,
+            Authentication connectedUser
+    ) {
+        User user = ((User) connectedUser.getPrincipal());
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("createdAt").descending()
+        );
+
+        Page<BookTransactionHistory> allBorrowedBooks =
+                bookTransactionHistoryRepository.findAllBorrowedBooks(
+                        pageable,
+                        user.getId()
+                );
+        List<BorrowedBooksResponse> borrowedBooksResponses = allBorrowedBooks.stream()
+                .map(bookMapper::toBorrowedBooksResponse)
+                .toList();
+
+        return new PageResponse<>(
+                borrowedBooksResponses,
+                allBorrowedBooks.getNumber(),
+                allBorrowedBooks.getSize(),
+                Integer.parseInt(String.format("%d", allBorrowedBooks.getTotalElements())),
+                allBorrowedBooks.getTotalPages(),
+                allBorrowedBooks.isFirst(),
+                allBorrowedBooks.isLast()
         );
     }
 }

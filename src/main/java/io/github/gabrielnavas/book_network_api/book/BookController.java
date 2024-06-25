@@ -1,6 +1,7 @@
 package io.github.gabrielnavas.book_network_api.book;
 
 import io.github.gabrielnavas.book_network_api.common.PageResponse;
+import io.github.gabrielnavas.book_network_api.history.BorrowedBooksResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +49,16 @@ public class BookController {
             Authentication connectedUser
     ) {
         return ResponseEntity.ok(bookService.findAllBooksByOwner(page, size, connectedUser));
+    }
+
+    @GetMapping("/borrowed")
+    public ResponseEntity<PageResponse<BorrowedBooksResponse>> findAllBorrowedBooks(
+            @RequestParam(name = "page", defaultValue = "0", required = false) int page,
+            @RequestParam(name = "size", defaultValue = "10", required = false) int size,
+            Authentication connectedUser
+    ) {
+        PageResponse<BorrowedBooksResponse> pages =
+                bookService.findAllBorrowedBooks(page, size, connectedUser);
+        return ResponseEntity.ok(pages);
     }
 }
