@@ -40,8 +40,11 @@ export class LoginComponent {
         this.router.navigate(['books']);
       },
       error: err => {
-        console.log(err);
-        this.errorMsg.push(err.message);
+        if (err.error.validationErrors) {
+          this.errorMsg = err.error.validationErrors;
+        } else {
+          this.errorMsg.push(err.error.error);
+        }
       }
     });
   }

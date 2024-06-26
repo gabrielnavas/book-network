@@ -4,8 +4,8 @@
   </h3>
   <hr>
   @if (errorMsg.length > 0) {
-    <div class="alert alert-danger" role="alert">
-      <p *ngFor="let msg of errorMsg">{{ msg }}</p>
+    <div class="alert alert-danger d-flex flex-column justify-content-center" role="alert">
+      <span class="mb-2" *ngFor="let msg of errorMsg">{{ msg }}</span>
     </div>
   }
   <div class="mb-3">
