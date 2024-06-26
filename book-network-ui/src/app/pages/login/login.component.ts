@@ -6,6 +6,7 @@ import {faSignInAlt} from '@fortawesome/free-solid-svg-icons';
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {Router} from "@angular/router";
 import {AuthenticationService} from "../../services/services/authentication.service";
+import {TokenService} from "../../services/token/token.service";
 
 @Component({
   selector: 'app-login',
@@ -21,11 +22,12 @@ import {AuthenticationService} from "../../services/services/authentication.serv
 export class LoginComponent {
   authRequest: AuthenticateRequest = {email: '', password: ''}
   errorMsg: Array<String> = []
-  faSignInAlt = faSignInAlt;
+  protected readonly faSignInAlt = faSignInAlt;
 
   constructor(
     private router: Router,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    private tokenService: TokenService
   ) {
   }
 
@@ -35,9 +37,12 @@ export class LoginComponent {
       body: {email: this.authRequest.email, password: this.authRequest.password},
     }).subscribe({
       next: value => {
-        // TODO: save the value.token localstorage, maybe?
-        console.log(value);
-        this.router.navigate(['books']);
+        if (value.token) {
+          this.tokenService.token = value.token;
+          this.router.navigate(['books']);
+        } else {
+          this.errorMsg = ['Login cannot be done. Contact admin.'];
+        }
       },
       error: err => {
         if (err.error.validationErrors) {
