@@ -48,7 +48,7 @@ export class RegisterComponent {
         }
       },
       complete: () => {
-        this.router.navigate(['activate-account']);
+        this.router.navigate(['activation-account']);
       }
     })
   }
