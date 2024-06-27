@@ -1,14 +1,60 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {BookResponse} from "../../../../services/models/book-response";
+import {FaIconComponent} from "@fortawesome/angular-fontawesome";
+import {
+  faArchive,
+  faBook,
+  faCircleInfo,
+  faCode,
+  faEdit,
+  faHeart,
+  faListCheck,
+  faShareNodes,
+  faUser,
+  faUserCheck
+} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-book-card',
   standalone: true,
-  imports: [],
+  imports: [
+    FaIconComponent
+  ],
   templateUrl: './book-card.component.html',
   styleUrl: './book-card.component.scss'
 })
 export class BookCardComponent {
+  icons = {
+    faBook: faBook,
+    faUserCheck: faUserCheck,
+    faCode: faCode,
+    faUser: faUser,
+    faCircleInfo: faCircleInfo,
+    faListCheck: faListCheck,
+    faHeart: faHeart,
+    faEdit: faEdit,
+    faShareNodes: faShareNodes,
+    faArchive: faArchive,
+  }
+
+  @Output() private share: EventEmitter<BookResponse> = new EventEmitter();
+  @Output() private archive: EventEmitter<BookResponse> = new EventEmitter();
+  @Output() private addToWaitingList: EventEmitter<BookResponse> = new EventEmitter();
+  @Output() private borrow: EventEmitter<BookResponse> = new EventEmitter();
+  @Output() private edit: EventEmitter<BookResponse> = new EventEmitter();
+  @Output() private details: EventEmitter<BookResponse> = new EventEmitter();
+
+  private _manage = false;
+
+  get manage(): boolean {
+    return this._manage;
+  }
+
+  @Input()
+  set manage(value: boolean) {
+    this._manage = value;
+  }
+
   private _bookCover: string | undefined;
 
   get bookCover(): string | undefined {
@@ -31,6 +77,30 @@ export class BookCardComponent {
   @Input()
   set book(value: BookResponse) {
     this._book = value;
+  }
+
+  onEdit() {
+    this.edit.emit(this.book);
+  }
+
+  onShare() {
+    this.share.emit(this.book);
+  }
+
+  onArchive() {
+    this.archive.emit(this.book);
+  }
+
+  onShowDetails() {
+    this.details.emit(this.book);
+  }
+
+  onBorrow() {
+    this.borrow.emit(this.book);
+  }
+
+  onAddToWaitingList() {
+    this.addToWaitingList.emit(this.book);
   }
 
   private convertToBase64(cover: string[]): string {

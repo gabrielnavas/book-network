@@ -3,4 +3,44 @@
   style="width: 20rem"
 >
   <img [src]="bookCover" alt="..." class="card-img-top" height="200">
+  <div class="card-body overflow-auto">
+    <h5 class="card-title fs-6 text-nowrap fw-bold mb-1">
+      <fa-icon [icon]="icons.faBook"></fa-icon>
+      {{ book.title }}
+    </h5>
+    <h5 class="card-subtitle fs-6 text-secondary mb-1">
+      <fa-icon [icon]="icons.faUserCheck"></fa-icon>
+      {{ book.authorName }}
+    </h5>
+    <h6 class="card-subtitle fs-6 text-secondary mb-1">
+      <fa-icon [icon]="icons.faCode"></fa-icon>
+      {{ book.isbn }}
+    </h6>
+    <h6 class="card-subtitle fs-6 text-secondary mb-1">
+      <fa-icon [icon]="icons.faUser"></fa-icon>
+      {{ book.owner }}
+    </h6>
+    <hr>
+    <p class="card-text">
+      {{ book.synopsis }}
+    </p>
+  </div>
+  <div class="card-footer d-flex gap-2 justify-content-between  align-items-center">
+    <div class="d-flex gap-2">
+      5 stars
+    </div>
+    @if (manage) {
+      <div class="d-flex gap-2">
+        <fa-icon (click)="onEdit()" [icon]="icons.faEdit" class="text-success"></fa-icon>
+        <fa-icon (click)="onShare()" [icon]="icons.faShareNodes" class="text-primary"></fa-icon>
+        <fa-icon (click)="onArchive()" [icon]="icons.faArchive" class="text-danger"></fa-icon>
+      </div>
+    } @else {
+      <div class="d-flex gap-2">
+        <fa-icon (click)="onShowDetails()" [icon]="icons.faCircleInfo" class="text-primary"></fa-icon>
+        <fa-icon (click)="onBorrow()" [icon]="icons.faListCheck" class="text-primary"></fa-icon>
+        <fa-icon (click)="onAddToWaitingList()" [icon]="icons.faHeart" class="text-danger"></fa-icon>
+      </div>
+    }
+  </div>
 </div>
