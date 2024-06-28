@@ -13,12 +13,14 @@ import {
   faUser,
   faUserCheck
 } from "@fortawesome/free-solid-svg-icons";
+import {RatingComponent} from "../rating/rating.component";
 
 @Component({
   selector: 'app-book-card',
   standalone: true,
   imports: [
-    FaIconComponent
+    FaIconComponent,
+    RatingComponent
   ],
   templateUrl: './book-card.component.html',
   styleUrl: './book-card.component.scss'

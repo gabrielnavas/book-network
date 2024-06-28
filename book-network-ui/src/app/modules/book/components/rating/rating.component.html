@@ -1,0 +1,12 @@
+<div>
+
+  <ng-container *ngFor="let _ of [].constructor(fullStars); let i = index">
+    <fa-icon [icon]="faStar" class="text-warning"></fa-icon>
+  </ng-container>
+  <ng-container *ngIf="hasHalfStar">
+    <fa-icon [icon]="faStarHalf" class="text-warning"></fa-icon>
+  </ng-container>
+  <ng-container *ngFor="let _ of [].constructor(emptyStars); let i = index">
+    <fa-icon [icon]="faStar"></fa-icon>
+  </ng-container>
+</div>
