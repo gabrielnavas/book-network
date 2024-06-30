@@ -1,7 +1,73 @@
 <h3>Books list</h3>
 <hr>
 <div class="d-flex justify-content-start gap-2 flex-wrap">
-  @for (book of booksResponse.content; track book.id) {
+  @for (book of bookResponse.content; track book.id) {
     <app-book-card [book]="book"></app-book-card>
   }
 </div>
+
+@if (bookResponse.totalPages && bookResponse.totalPages > 1) {
+
+  <div class="d-flex justify-content-center mt-3">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item">
+          <a
+            (click)="goToFirstPage()"
+            [class.disabled]="page === 0"
+            aria-label="Previous"
+            class="page-link"
+            href="javascript:void(0)"
+          >
+            <fa-icon [icon]="faAnglesLeft"></fa-icon>
+          </a>
+        </li>
+        <li class="page-item">
+          <a
+            (click)="goToPreviousPage()"
+            [class.disabled]="page === 0"
+            aria-label="Previous"
+            class="page-link"
+            href="javascript:void(0)"
+          >
+            <fa-icon [icon]="faAngleLeft"></fa-icon>
+          </a>
+        </li>
+        <li
+          *ngFor="let _ of [].constructor(bookResponse.totalPages); let i = index"
+          class="page-item"
+        >
+          <a
+            (click)="goToPage(i)"
+            [class.active]="page === i"
+            class="page-link"
+            href="javascript:void(0)"
+          >{{ i + 1 }}</a>
+        </li>
+        <li class="page-item">
+          <a
+            (click)="goToNextPage()"
+            [class.disabled]="isLastPage"
+            aria-label="Next"
+            class="page-link"
+            href="javascript:void(0)"
+          >
+            <fa-icon [icon]="faChevronRight"></fa-icon>
+          </a>
+        </li>
+        <li class="page-item">
+          <a
+            (click)="goToLastPage()"
+            [class.disabled]="isLastPage"
+            aria-label="Next"
+            class="page-link"
+            href="javascript:void(0)"
+          >
+            <fa-icon [icon]="faAnglesRight"></fa-icon>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+}
+
