@@ -9,18 +9,19 @@ import {
   faNavicon,
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
-import {TokenService} from "../../../../services/token/token.service";
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-menu',
   standalone: true,
   imports: [
-    FaIconComponent
+    FaIconComponent,
+    RouterLink
   ],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.scss'
 })
-export class MenuComponent implements OnInit{
+export class MenuComponent implements OnInit {
 
   protected readonly icons = {
     faHomeAlt: faHomeAlt,
@@ -44,25 +45,24 @@ export class MenuComponent implements OnInit{
     })
   }
 
+  logout() {
+
+  }
+
   private keepLinkActiveOnEnterPage(link: Element) {
     // keep the link active, on enter page
-    const href = link.getAttribute("routerlink") || '';
+    const href = link.getAttribute("href") || '';
     const endWithHref = window.location.href.endsWith(href);
-    if(endWithHref) {
+    if (endWithHref) {
       link.classList.add('active')
     }
   }
 
-  private removeAllActive( linkColor: NodeListOf<Element>) {
+  private removeAllActive(linkColor: NodeListOf<Element>) {
     linkColor.forEach(l => l.classList.remove('active'));
   }
 
   private addActive(link: Element) {
     link.classList.add('active');
-  }
-
-
-  logout() {
-
   }
 }
