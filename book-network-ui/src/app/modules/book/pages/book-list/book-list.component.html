@@ -1,13 +1,24 @@
 <h3>Books list</h3>
+<div
+  *ngIf="message"
+  [class.alert-danger]="level === 'danger'"
+  [class.alert-success]="level === 'success'"
+  class="alert"
+>
+  {{ message }}
+</div>
 <hr>
 <div class="d-flex justify-content-start gap-2 flex-wrap">
   @for (book of bookResponse.content; track book.id) {
-    <app-book-card [book]="book"></app-book-card>
+    <app-book-card
+      [book]="book"
+      (borrow)="borrowBook($event)"
+    >
+    </app-book-card>
   }
 </div>
 
-@if (bookResponse.totalPages && bookResponse.totalPages > 1) {
-
+@if (bookResponse.totalPages && bookResponse.totalPages >= 1) {
   <div class="d-flex justify-content-center mt-3">
     <nav aria-label="Page navigation example">
       <ul class="pagination">
@@ -19,7 +30,7 @@
             class="page-link"
             href="javascript:void(0)"
           >
-            <fa-icon [icon]="faAnglesLeft"></fa-icon>
+            <fa-icon [icon]="icons.faAnglesLeft"></fa-icon>
           </a>
         </li>
         <li class="page-item">
@@ -30,7 +41,7 @@
             class="page-link"
             href="javascript:void(0)"
           >
-            <fa-icon [icon]="faAngleLeft"></fa-icon>
+            <fa-icon [icon]="icons.faAngleLeft"></fa-icon>
           </a>
         </li>
         <li
@@ -52,7 +63,7 @@
             class="page-link"
             href="javascript:void(0)"
           >
-            <fa-icon [icon]="faChevronRight"></fa-icon>
+            <fa-icon [icon]="icons.faChevronRight"></fa-icon>
           </a>
         </li>
         <li class="page-item">
@@ -63,11 +74,17 @@
             class="page-link"
             href="javascript:void(0)"
           >
-            <fa-icon [icon]="faAnglesRight"></fa-icon>
+            <fa-icon [icon]="icons.faAnglesRight"></fa-icon>
           </a>
         </li>
       </ul>
     </nav>
   </div>
+} @else {
+  <div
+    [class.alert-info]=true
+    class="alert text-center fw-bold fs-5"
+  >
+    No books available
+  </div>
 }
-

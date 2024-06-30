@@ -5,7 +5,8 @@ import {PageResponseBookResponse} from "../../../../services/models/page-respons
 import {BookCardComponent} from "../../components/book-card/book-card.component";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {faAngleLeft, faAnglesLeft, faAnglesRight, faChevronRight} from "@fortawesome/free-solid-svg-icons";
-import {NgForOf} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
+import {BookResponse} from "../../../../services/models/book-response";
 
 @Component({
   selector: 'app-book-list',
@@ -13,7 +14,8 @@ import {NgForOf} from "@angular/common";
   imports: [
     BookCardComponent,
     FaIconComponent,
-    NgForOf
+    NgForOf,
+    NgIf
   ],
   templateUrl: './book-list.component.html',
   styleUrl: './book-list.component.scss',
@@ -21,12 +23,17 @@ import {NgForOf} from "@angular/common";
 export class BookListComponent implements OnInit {
   bookResponse: PageResponseBookResponse = {};
   page = 0;
-  size = 1;
+  size = 5;
 
-  protected readonly faAngleLeft = faAngleLeft;
-  protected readonly faAnglesLeft = faAnglesLeft;
-  protected readonly faChevronRight = faChevronRight;
-  protected readonly faAnglesRight = faAnglesRight;
+  icons = {
+    faAngleLeft: faAngleLeft,
+    faAnglesLeft: faAnglesLeft,
+    faChevronRight: faChevronRight,
+    faAnglesRight: faAnglesRight,
+  }
+
+  protected message: string = '';
+  protected level: string = 'success';
 
   constructor(
     private readonly router: Router,
@@ -65,6 +72,22 @@ export class BookListComponent implements OnInit {
   goToNextPage() {
     this.page++;
     this.findAllBooks();
+  }
+
+  borrowBook(book: BookResponse) {
+    this.message = ''
+    this.bookService.borrowBook({
+      "book-id": book.id as number,
+    }).subscribe({
+      next: value => {
+        this.message = 'Book successfully added to your list';
+        this.level = 'success'
+      },
+      error: err => {
+        this.message = err.error.error;
+        this.level = 'danger'
+      }
+    })
   }
 
   private findAllBooks() {
