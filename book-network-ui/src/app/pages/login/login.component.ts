@@ -39,7 +39,7 @@ export class LoginComponent {
       next: value => {
         if (value.token) {
           this.tokenService.token = value.token;
-          this.router.navigate(['books']);
+          this.router.navigate(['/books']);
         } else {
           this.errorMsg = ['Login cannot be done. Contact admin.'];
         }

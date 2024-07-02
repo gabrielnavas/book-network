@@ -4,7 +4,7 @@ import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {NgForOf, NgIf} from "@angular/common";
 import {PageResponseBookResponse} from "../../../../services/models/page-response-book-response";
 import {faAngleLeft, faAnglesLeft, faAnglesRight, faChevronRight, faPlus} from "@fortawesome/free-solid-svg-icons";
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {BookService} from "../../../../services/services/book.service";
 import {BookResponse} from "../../../../services/models/book-response";
 
@@ -15,7 +15,8 @@ import {BookResponse} from "../../../../services/models/book-response";
     BookCardComponent,
     FaIconComponent,
     NgForOf,
-    NgIf
+    NgIf,
+    RouterLink
   ],
   templateUrl: './my-books.component.html',
   styleUrl: './my-books.component.scss'
