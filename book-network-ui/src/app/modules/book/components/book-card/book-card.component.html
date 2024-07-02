@@ -38,15 +38,21 @@
     </div>
     @if (manage) {
       <div class="d-flex gap-2">
-        <fa-icon (click)="onEdit()" [icon]="icons.faEdit" class="text-success"></fa-icon>
-        <fa-icon (click)="onShare()" [icon]="icons.faShareNodes" class="text-primary"></fa-icon>
-        <fa-icon (click)="onArchive()" [icon]="icons.faArchive" class="text-danger"></fa-icon>
+        <fa-icon (click)="onEdit()" [icon]="icons.faEdit" class="text-success" data-placement="bottom"
+                 title="Edit of this book"></fa-icon>
+        <fa-icon (click)="onShare()" [icon]="icons.faShareNodes" class="text-primary" data-placement="bottom"
+                 title="Share of this book"></fa-icon>
+        <fa-icon (click)="onArchive()" [icon]="icons.faArchive" class="text-danger" data-placement="bottom"
+                 title="Archive this book"></fa-icon>
       </div>
     } @else {
       <div class="d-flex gap-2">
-        <fa-icon (click)="onShowDetails()" [icon]="icons.faCircleInfo" class="text-primary"></fa-icon>
-        <fa-icon (click)="onBorrow()" [icon]="icons.faListCheck" class="text-primary"></fa-icon>
-        <fa-icon (click)="onAddToWaitingList()" [icon]="icons.faHeart" class="text-danger"></fa-icon>
+        <fa-icon (click)="onShowDetails()" [icon]="icons.faCircleInfo" class="text-primary" data-placement="bottom"
+                 title="Show details of this book book already retorned"></fa-icon>
+        <fa-icon (click)="onBorrow()" [icon]="icons.faListCheck" class="text-primary" data-placement="bottom"
+                 title="Borrow this book"></fa-icon>
+        <fa-icon (click)="onAddToWaitingList()" [icon]="icons.faHeart" class="text-danger" data-placement="bottom"
+                 title="Add this book to waiting"></fa-icon>
       </div>
     }
   </div>
