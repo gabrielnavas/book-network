@@ -1,10 +1,10 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {NgForOf, NgIf, NgOptimizedImage} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {BookRequest} from "../../../../services/models/book-request";
 import {FaIconComponent} from "@fortawesome/angular-fontawesome";
 import {faSave} from "@fortawesome/free-solid-svg-icons";
-import {Router, RouterLink} from "@angular/router";
+import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {BookService} from "../../../../services/services/book.service";
 
 @Component({
@@ -21,7 +21,7 @@ import {BookService} from "../../../../services/services/book.service";
   templateUrl: './manage-book.component.html',
   styleUrl: './manage-book.component.scss'
 })
-export class ManageBookComponent {
+export class ManageBookComponent implements OnInit {
 
   bookRequest: BookRequest = {authorName: '', isbn: '', synopsis: '', title: '', shareable: false}
   errorMsg: Array<string> = [];
@@ -32,7 +32,34 @@ export class ManageBookComponent {
 
   constructor(
     private readonly bookService: BookService,
-    private readonly router: Router) {
+    private readonly router: Router,
+    private readonly activatedRoute: ActivatedRoute
+  ) {
+  }
+
+  ngOnInit(): void {
+    const bookId = this.activatedRoute.snapshot.params['bookId'];
+    if (bookId) {
+      this.bookService.getBook({
+        "book-id": bookId
+      }).subscribe({
+        next: bookResponse => {
+          this.bookRequest = {
+            authorName: bookResponse.authorName as string,
+            shareable: bookResponse.shareable as boolean,
+            isbn: bookResponse.isbn as string,
+            synopsis: bookResponse.synopsis as string,
+            title: bookResponse.title as string,
+            id: bookResponse.id as number
+          };
+          if (bookResponse.cover) {
+            this.selectedPicture = 'data:image/jpeg;base64,' + bookResponse.cover;
+          }
+        },
+        error: err => {
+        }
+      })
+    }
   }
 
   onFileSelected(event: Event) {
@@ -52,11 +79,19 @@ export class ManageBookComponent {
             "book-id": bookId, body: {file: this.selectedBookCover!}
           }).subscribe({
             complete: () => {
-              this.router.navigate(['/books/my-books']);
+              this.goToMyBooks();
+            },
+            error: err => {
+              if (err.error.validationErrors) {
+                this.errorMsg = err.error.validationErrors;
+              } else if (err.error) {
+                this.errorMsg = err.error.validationErrors;
+              }
             }
           })
+        } else {
+          this.goToMyBooks();
         }
-
       },
       error: err => {
         if (err.error.validationErrors) {
@@ -66,6 +101,10 @@ export class ManageBookComponent {
         }
       }
     })
+  }
+
+  private goToMyBooks() {
+    this.router.navigate(['/books/my-books']);
   }
 
   private showFile(): void {

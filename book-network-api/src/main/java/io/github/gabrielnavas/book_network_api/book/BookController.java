@@ -24,7 +24,12 @@ public class BookController {
             @Valid @RequestBody BookRequest request,
             Authentication connectedUser
     ) {
-        Integer bookId = bookService.saveBook(request, connectedUser);
+        Integer bookId;
+        if(request.id() != null) {
+            bookId = bookService.partialsUpdate(request, connectedUser);
+        } else {
+            bookId = bookService.saveBook(request, connectedUser);
+        }
         return ResponseEntity.ok(bookId);
     }
 

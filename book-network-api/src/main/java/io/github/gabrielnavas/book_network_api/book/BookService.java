@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +43,30 @@ public class BookService {
         Book book = bookMapper.toBook(request);
         book.setOwner(user);
         book = bookRepository.save(book);
+        return book.getId();
+    }
+
+    public Integer partialsUpdate(BookRequest request, Authentication connectedUser) {
+        Optional<Book> bookOptional = bookRepository.findById(request.id());
+        if(bookOptional.isEmpty()) {
+            throw new EntityNotFoundException(String.format("book with title: %s not found", request.title()));
+        }
+
+        Book book = bookOptional.get();
+
+        final boolean isDifferentBook = !book.getId().equals(request.id());
+        if(isDifferentBook) {
+            final String message = String.format("already exists a book with name: %s", request.title());
+            throw new OperationNotPermittedException(message);
+        }
+
+        book.setTitle(request.title());
+        book.setAuthorName(request.authorName());
+        book.setShareable(request.shareable());
+        book.setIsbn(request.isbn());
+        book.setSynopsis(request.synopsis());
+        bookRepository.save(book);
+
         return book.getId();
     }
 

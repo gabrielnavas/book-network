@@ -1,5 +1,7 @@
 <div
-  class="card"
+  [class.border-success]="book.shareable"
+  [class.border-warning]="book.archived"
+  class="card border-2"
   style="width: 20rem"
 >
   <img [src]="bookCover" alt="..." class="card-img-top" height="200">
