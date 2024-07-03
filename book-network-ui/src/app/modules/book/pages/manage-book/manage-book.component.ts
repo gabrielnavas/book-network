@@ -97,7 +97,7 @@ export class ManageBookComponent implements OnInit {
         if (err.error.validationErrors) {
           this.errorMsg = err.error.validationErrors;
         } else if (err.error) {
-          this.errorMsg = err.error.validationErrors;
+          this.errorMsg = err.error.error;
         }
       }
     })

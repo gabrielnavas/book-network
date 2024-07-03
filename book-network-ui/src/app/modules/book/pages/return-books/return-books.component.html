@@ -1,86 +1,13 @@
-<h2>
-  My Borrowed books
-</h2>
+<h2>My returned books</h2>
 <hr>
-
-@if (selectedBook) {
-  <div class="d-flex flex-column col-6">
-    <h2>
-      Return and share feedback
-    </h2>
-    <div class="d-flex flex-column col-12">
-      <div class="d-flex">
-        <div class="col-1">
-          <strong>Title</strong>
-        </div>
-        <div class="col-11">
-          {{ selectedBook.title }}
-        </div>
-      </div>
-      <div class="d-flex">
-        <div class="col-1">
-          <strong>Author</strong>
-        </div>
-        <div class="col-11">
-          {{ selectedBook.authorName }}
-        </div>
-      </div>
-      <div class="d-flex">
-        <div class="col-1">
-          <strong>ISBN</strong>
-        </div>
-        <div class="col-11">
-          {{ selectedBook.isbn }}
-        </div>
-      </div>
-      <div class="d-flex">
-        <div class="col-1">
-          <strong>Rate</strong>
-        </div>
-        <div class="col-11">
-          {{ selectedBook.rate }}
-        </div>
-      </div>
-      <hr>
-      <div class="col-12">
-        <form class="row g-3">
-          <div class="d-flex gap-3">
-            <input [(ngModel)]="feedbackRequest.note"
-                   class="form-range w-25"
-                   id="range"
-                   max="5"
-                   min="0"
-                   name="range"
-                   step="0.5"
-                   type="range">
-            <app-rating [rating]="feedbackRequest.note || 0"></app-rating>
-            {{ feedbackRequest.note }}
-          </div>
-          <div class="col-12 ">
-            <label class="form-label" for="feedback">Feedback</label>
-            <textarea [(ngModel)]="feedbackRequest.comment" class="form-control" id="feedback"
-                      name="feedback"
-                      placeholder="feedback"
-                      rows="4"></textarea>
-            <div class="d-flex justify-content-end gap-2 col-12 mt-2">
-              <button (click)="returnBook(true)" class="btn btn-outline-primary" type="submit">
-                <fa-icon [icon]="icons.faSave"></fa-icon>
-                Rate the book & Return
-              </button>
-              <button (click)="returnBook(false)" class="btn btn-outline-success" type="submit">
-                <fa-icon [icon]="icons.faPaperPlane"></fa-icon>
-                Just Return
-              </button>
-              <button class="btn btn-link text-danger" (click)="cancelSelectedBook()">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-}
+<div
+  *ngIf="message"
+  [class.alert-danger]="level === 'danger'"
+  [class.alert-success]="level === 'success'"
+  class="alert"
+>
+  {{ message }}
+</div>
 
 @if (!selectedBook) {
   <div class="d-flex align-items-center justify-content-center" style="width: 100vw">
@@ -99,7 +26,7 @@
         </tr>
         </thead>
         <tbody>
-          @for (book of borrowedBook.content; track book.id; ) {
+          @for (book of returnedBooks.content; track book.id; ) {
             <tr>
               <th scope="col">{{ $index + 1 }}</th>
               <td>{{ book.title }}</td>
@@ -118,7 +45,7 @@
                     data-placement="bottom"
                     title="This book already retorned"></fa-icon>
                 } @else {
-                  <fa-icon (click)="returnBorrowedBook(book)" [icon]="icons.faPaperPlane" data-toggle="tooltip"
+                  <fa-icon [icon]="icons.faPaperPlane" data-toggle="tooltip"
                            data-placement="bottom" title="Return the book"
                            class="text-success cursor-pointer"></fa-icon>
                 }
@@ -132,6 +59,7 @@
                   <fa-icon [icon]="icons.faCircleCheck" data-toggle="tooltip"
                            data-placement="bottom"
                            title="Return is not Approved"
+                           (click)="approveBookReturn(book)"
                            class="ms-2 cursor-pointer"></fa-icon>
                 }
               </td>
@@ -143,7 +71,8 @@
   </div>
 }
 
-@if (borrowedBook.totalPages && borrowedBook.totalPages >= 1) {
+
+@if (returnedBooks.totalPages && returnedBooks.totalPages >= 1) {
   <div class="d-flex justify-content-center mt-3">
     <nav aria-label="Page navigation example">
       <ul class="pagination">
@@ -170,7 +99,7 @@
           </a>
         </li>
         <li
-          *ngFor="let _ of [].constructor(borrowedBook.totalPages); let i = index"
+          *ngFor="let _ of [].constructor(returnedBooks.totalPages); let i = index"
           class="page-item"
         >
           <a
