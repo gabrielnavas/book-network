@@ -3,6 +3,7 @@ import {AppComponent} from "./app.component";
 import {LoginComponent} from "./pages/login/login.component";
 import {RegisterComponent} from "./pages/register/register.component";
 import {ActivateAccountComponent} from "./pages/activate-account/activate-account.component";
+import {authGuard} from "./services/guard/auth.guard";
 
 export const routes: Routes = [{
   path: '', component: AppComponent,
@@ -17,5 +18,6 @@ export const routes: Routes = [{
   component: ActivateAccountComponent
 }, {
   path: 'books',
-  loadChildren: () => import('./modules/book/book.module').then(m => m.BookModule)
+  loadChildren: () => import('./modules/book/book.module').then(m => m.BookModule),
+  canActivate: [authGuard]
 }];
