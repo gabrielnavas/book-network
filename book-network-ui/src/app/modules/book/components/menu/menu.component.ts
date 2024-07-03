@@ -9,7 +9,8 @@ import {
   faNavicon,
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
+import {TokenService} from "../../../../services/token/token.service";
 
 @Component({
   selector: 'app-menu',
@@ -33,6 +34,12 @@ export class MenuComponent implements OnInit {
     faSearch: faSearch,
   }
 
+  constructor(
+    private readonly tokenService: TokenService,
+    private readonly router: Router,
+  ) {
+  }
+
   ngOnInit() {
     const linkColor = document.querySelectorAll(".nav-link");
     linkColor.forEach(link => {
@@ -46,7 +53,8 @@ export class MenuComponent implements OnInit {
   }
 
   logout() {
-
+    this.tokenService.logout();
+    window.location.reload();
   }
 
   private keepLinkActiveOnEnterPage(link: Element) {

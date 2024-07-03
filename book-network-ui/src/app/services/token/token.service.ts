@@ -19,6 +19,10 @@ export class TokenService {
     localStorage.setItem(this.TOKEN_KEY, token);
   }
 
+  logout(): void {
+    localStorage.clear();
+  }
+
   isTokenNotValid() {
     return !this.isTokenValid();
   }
@@ -34,9 +38,8 @@ export class TokenService {
   private checkExpiryDate(token: string): boolean {
     const jwtHelper = new JwtHelperService();
     const isTokenExpired = jwtHelper.isTokenExpired(token);
-    console.log(isTokenExpired)
     if (isTokenExpired) {
-      localStorage.clear();
+      this.logout();
       return false;
     }
     return true;
