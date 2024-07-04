@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -72,25 +73,52 @@ public class AuthenticationService {
                 .roles(List.of(userRole))
                 .build();
 
-        user = userRepository.save(user);
+        userRepository.save(user);
         sendValidationEmail(user);
     }
 
-    private void sendValidationEmail(User user) throws MessagingException, IOException {
-        Token token = tokenService.generateTokenAndSave(user);
+    public void sendValidationEmail(User user) throws MessagingException {
+        Optional<Token> optionalToken = tokenRepository.findByUserEmail(user.getEmail());
+        Token savedToken;
+        if (optionalToken.isPresent()) {
+            savedToken = optionalToken.get();
+
+            boolean tokenAlreadyValidate = savedToken.getValidatedAt() != null;
+            if (tokenAlreadyValidate) {
+                throw new RuntimeException("Token already validated");
+            }
+
+            if (expiredToken(savedToken)) {
+                savedToken = tokenService.generateTokenAndSave(user);
+            }
+        } else {
+            savedToken = tokenService.generateTokenAndSave(user);
+        }
         emailService.sendEmail(
                 user.getEmail(),
                 user.fullName(),
                 EmailTemplate.ACTIVATE_ACCOUNT,
                 activationEmail,
-                token.getToken(),
+                savedToken.getToken(),
                 "AccountActivation"
         );
     }
 
     @Transactional
     public void activateAccount(String token) throws MessagingException, IOException {
-        Token savedToken = fetchToken(token);
+        Token savedToken = tokenRepository.findByToken(token)
+                // TODO: exception has to be defined
+                .orElseThrow(() -> new RuntimeException("Invalid"));
+
+        if (expiredToken(savedToken)) {
+            sendValidationEmail(savedToken.getUser());
+            throw new RuntimeException("Token is expired");
+        }
+
+        boolean tokenAlreadyValidate = savedToken.getValidatedAt() != null;
+        if (tokenAlreadyValidate) {
+            throw new RuntimeException("Token already validated");
+        }
 
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
@@ -101,22 +129,8 @@ public class AuthenticationService {
         userRepository.save(user);
     }
 
-    private Token fetchToken(String token) throws MessagingException, IOException {
-        Token savedToken = tokenRepository.findByToken(token)
-                // TODO: exception has to be defined
-                .orElseThrow(() -> new RuntimeException("Invalid"));
-
+    private boolean expiredToken(Token token) {
         LocalDateTime now = LocalDateTime.now();
-        boolean tokenExpired = now.isAfter(savedToken.getExpiresAt());
-        if (tokenExpired) {
-            sendValidationEmail(savedToken.getUser());
-            throw new RuntimeException("Token is expired");
-        }
-
-        boolean tokenAlreadyValidate = savedToken.getValidatedAt() != null;
-        if (tokenAlreadyValidate) {
-            throw new RuntimeException("Token already validated");
-        }
-        return savedToken;
+        return now.isAfter(token.getExpiresAt());
     }
 }
