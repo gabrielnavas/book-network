@@ -9,7 +9,7 @@ import {
   faNavicon,
   faSearch
 } from "@fortawesome/free-solid-svg-icons";
-import {Router, RouterLink} from "@angular/router";
+import {RouterLink} from "@angular/router";
 import {TokenService} from "../../../../services/token/token.service";
 
 @Component({
@@ -36,7 +36,6 @@ export class MenuComponent implements OnInit {
 
   constructor(
     private readonly tokenService: TokenService,
-    private readonly router: Router,
   ) {
   }
 
