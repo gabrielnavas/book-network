@@ -29,27 +29,22 @@ public class EmailService {
             String confirmationUrl,
             String activationCode,
             String subject) throws MessagingException {
-        try {
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
-            Map<String, Object> properties = loadProperties(username, confirmationUrl, activationCode);
+        Map<String, Object> properties = loadProperties(username, confirmationUrl, activationCode);
 
-            Context context = new Context();
-            context.setVariables(properties);
+        Context context = new Context();
+        context.setVariables(properties);
 
-            helper.setFrom("contact@aliboucoding.com");
-            helper.setTo(to);
-            helper.setSubject(subject);
+        helper.setFrom("noreply@book-network.com");
+        helper.setTo(to);
+        helper.setSubject(subject);
 
-            String template = loadTemplate(emailTemplate.name(), context);
-            helper.setText(template, true);
+        String template = loadTemplate(emailTemplate.name(), context);
+        helper.setText(template, true);
 
-            javaMailSender.send(mimeMessage);
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-
+        javaMailSender.send(mimeMessage);
     }
 
     private Map<String, Object> loadProperties(String username, String confirmationUrl, String activationCode) {
